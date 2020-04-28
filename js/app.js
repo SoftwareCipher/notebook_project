@@ -1,34 +1,79 @@
-let butInputName = document.getElementById('button-input-value');
-butInputName.onclick = function t1() {
-    let li = document.createElement('tr');
-    let name = document.querySelector('.input-name').value
-    li.innerHTML = `
+  const form = document.querySelector('form');
+        const ul = document.querySelector('tbody');
+        const input = document.getElementById('item');
+        const addItem = document.getElementById('addItem');
+        let itemsArray = localStorage.getItem('items') ? JSON.parse(localStorage.getItem('items')) : [];
+ 
+ 
+        // ------------------- add tr ---------------------
+ 
+        const liMaker = (text) =>
+        {
+ 
+            const li = document.createElement('tr');
+            li.innerHTML = `
     <td>
         <input type="checkbox" class="checkbox" id="qwe">
     </td>
     <td class="name-list">
-        <p class="p_input" id="Name">${name}</p>
+        <p class="p_input" id="Name">${text}</p>
     </td>
     <td class="editing-list">
         <div class="editing">
-            <img src="images/UpDown.png" alt="UpDown" onclick="change(this)" class="trUp">
+             <img src="images/UpDown.png" alt="UpDown" onclick="change(this)" class="trUp">
             <div class="vl"></div>
             <img src="images/pen.png" alt="editing" class="editing-name">
             <div class="vl"></div>
-            <a onclick="service.removeRow(this);" href="#"><img src="images/basket.png" alt="basket" class="clear"></a>
+           <a href="#"><img src="images/basket.png" alt="basket" class="clear"></a>
         </div>
     </td>`;
-    document.querySelector('tbody').append(li);
-    t3();
-}
+            function clickListener(evt)
+            {
+                if (evt.target.className == "clear")
+                {
+                    let tr = evt.currentTarget;
+                    tr.removeEventListener("click", clickListener);
+                    window.onunload = function (evt)
+                    {
+                        localStorage.setItem("items", JSON.stringify(itemsArray));
+                    }
+ 
+                    itemsArray.splice(itemsArray.indexOf(text), 1);
+                    tr.parentElement.removeChild(tr);
+                }
+            }
+            li.addEventListener("click", clickListener)
+            ul.appendChild(li);
+            t3();
+        }
+ 
+        // ------------------- function ---------------------
+ 
+        form.addEventListener('submit', function (e)
+        {
+            e.preventDefault();
+            if (itemsArray.includes(input.value))
+            {
+                input.value = "";
+                return;
+            }
+            itemsArray.push(input.value);
+            liMaker(input.value);
+            input.value = "";
+        });
+ 
+        itemsArray.forEach(item =>
+        {
+            liMaker(item);
+ 
+        });
+ 
+        window.onunload = function (evt)
+        {
+            localStorage.setItem("items", JSON.stringify(itemsArray));
+        }
 
-// ----------- delite -----------
-let service = {
-    removeRow: function (el) {
-        el.closest('tr').remove();
-    }
-}
-
+ 
 //  --------- checked -----------
 
 function t3() {
@@ -72,5 +117,7 @@ function change(i) {
         return;
     tr2.parentNode.insertBefore(tr2, tr1);
 }
+ 
+
 
 
